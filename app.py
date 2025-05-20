@@ -1,12 +1,12 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import PegasusTokenizer, PegasusForConditionalGeneration
 from newspaper import Article
 from googletrans import Translator
 import torch
 
 # Load model
-tokenizer = AutoTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
-model = AutoModelForSeq2SeqLM.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
+tokenizer = PegasusTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
+model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
 translator = Translator()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

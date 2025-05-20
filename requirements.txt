@@ -1,5 +1,5 @@
 streamlit
-transformers==4.36.2
+transformers>=4.35.0 --force-reinstall
 torch
 googletrans==4.0.0-rc1
 newspaper3k

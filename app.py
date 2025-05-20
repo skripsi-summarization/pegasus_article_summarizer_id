@@ -4,8 +4,9 @@ from newspaper import Article
 from googletrans import Translator
 import torch
 
-model = AutoModelForSeq2SeqLM.from_pretrained("model")
-tokenizer = AutoTokenizer.from_pretrained("tokenizer")
+# Load model
+tokenizer = AutoTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
+model = AutoModelForSeq2SeqLM.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
 translator = Translator()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

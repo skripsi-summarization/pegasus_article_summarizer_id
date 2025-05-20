@@ -1,0 +1,6 @@
+streamlit
+transformers
+torch
+googletrans==4.0.0-rc1
+newspaper3k
+sentencepiece

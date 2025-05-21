@@ -6,8 +6,9 @@ from newspaper import Article
 from googletrans import Translator
 import torch
 
-# Load model & tokenizer safely using device_map
-model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization", device_map="auto")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization").to(device)
 tokenizer = PegasusTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
 translator = Translator()
 

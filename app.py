@@ -7,15 +7,15 @@ from googletrans import Translator
 import torch
 
 # Load model & tokenizer safely using device_map
-model = PegasusForConditionalGeneration.from_pretrained("model", device_map="auto")
-tokenizer = PegasusTokenizer.from_pretrained("tokenizer")
+model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization", device_map="auto")
+tokenizer = PegasusTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
 translator = Translator()
 
 # Streamlit layout improvements
 st.set_page_config(page_title="PEGASUS News Summarizer", layout="centered")
 st.title("📰 PEGASUS News Summarizer 🇮🇩")
 st.markdown("""
-This app summarizes **Indonesian news articles** using a fine-tuned [PEGASUS](https://huggingface.co/models?search=pegasus) model.
+This app summarizes **Indonesian news articles** using a fine-tuned [PEGASUS](https://huggingface.co/skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization) model.
 
 **Workflow:** Translate ➜ Summarize ➜ Translate Back
 """)

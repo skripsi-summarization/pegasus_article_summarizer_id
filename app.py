@@ -8,7 +8,8 @@ import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization").to(device)
+model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
+model = model.to(device)
 tokenizer = PegasusTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
 translator = Translator()
 

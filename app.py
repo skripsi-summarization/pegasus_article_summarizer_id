@@ -1,55 +1,49 @@
-# PEGASUS app.py
-
 import streamlit as st
-from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 from newspaper import Article
-from googletrans import Translator
-import torch
+from transformers import pipeline, PegasusTokenizer, PegasusForConditionalGeneration
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Load model using pipeline and cache
+@st.cache_resource
+def load_summarizer():
+    model_name = "skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization"
+    tokenizer = PegasusTokenizer.from_pretrained(model_name)
+    model = PegasusForConditionalGeneration.from_pretrained(model_name)
 
-model = PegasusForConditionalGeneration.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
-model = model.to(device)
-tokenizer = PegasusTokenizer.from_pretrained("skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization")
-translator = Translator()
+    return pipeline("summarization", model=model, tokenizer=tokenizer)
 
-# Streamlit layout improvements
-st.set_page_config(page_title="PEGASUS News Summarizer", layout="centered")
-st.title("📰 PEGASUS News Summarizer 🇮🇩")
-st.markdown("""
-This app summarizes **Indonesian news articles** using a fine-tuned [PEGASUS](https://huggingface.co/skripsi-summarization-1234/pegasus-xsum-finetuned-xlsum-summarization) model.
+summarizer = load_summarizer()
 
-**Workflow:** Translate ➜ Summarize ➜ Translate Back
-""")
+# Streamlit UI
+st.set_page_config(page_title="PEGASUS Indonesian News Summarizer")
+st.title("📰 PEGASUS Indonesian News Summarizer")
+st.write("Enter a URL from an Indonesian news site (e.g., Detik, Kompas) to summarize its content.")
 
-# Input section
-url = st.text_input("📎 Paste the URL of the Indonesian news article:")
+# Input: URL
+url = st.text_input("Paste the article URL here:")
 
-if url:
-    try:
-        with st.spinner("📥 Downloading and parsing article..."):
-            article = Article(url)
+# Fetch article text
+if st.button("Show Article Text"):
+    if url:
+        try:
+            article = Article(url, language='id')
             article.download()
             article.parse()
-            text = article.text
+            st.subheader("📄 Full Article")
+            st.write(article.text)
+            st.session_state.article_text = article.text
+        except Exception as e:
+            st.error(f"❌ Failed to fetch article: {str(e)}")
+    else:
+        st.warning("⚠️ Please input a valid URL.")
 
-        st.subheader("📰 Original Article")
-        st.write(text)
-
-        with st.spinner("🌐 Translating to English..."):
-            en_text = translator.translate(text, src='id', dest='en').text
-
-        with st.spinner("🤖 Summarizing in English using PEGASUS..."):
-            inputs = tokenizer(en_text, return_tensors="pt", truncation=True, max_length=512, padding="longest")
-            summary_ids = model.generate(**inputs, max_length=128, num_beams=4, early_stopping=True)
-            en_summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-
-        with st.spinner("🌐 Translating summary back to Indonesian..."):
-            id_summary = translator.translate(en_summary, src='en', dest='id').text
-
-        st.success("✅ Summary generated successfully!")
-        st.subheader("🔎 Ringkasan Berita")
-        st.write(id_summary)
-
-    except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+# Summarize
+if st.button("Summarize"):
+    if "article_text" in st.session_state:
+        with st.spinner("✍️ Summarizing..."):
+            # Optional: prepend instruction if fine-tuned with one
+            input_text = st.session_state.article_text
+            summary = summarizer(input_text, max_length=128, min_length=40, do_sample=False)
+            st.subheader("📝 Summary")
+            st.success(summary[0]['summary_text'])
+    else:
+        st.warning("⚠️ No article text found. Please load the article first.")

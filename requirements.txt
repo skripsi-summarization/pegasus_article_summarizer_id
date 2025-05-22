@@ -2,6 +2,7 @@ streamlit
 transformers==4.35.2
 torch==2.1.0
 googletrans==4.0.0-rc1
+numpy<2.0
 newspaper3k
 sentencepiece
 lxml[html_clean]

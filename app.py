@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="PEGASUS Indonesian News Summarizer")
+
 from newspaper import Article
 from transformers import pipeline, PegasusTokenizer, PegasusForConditionalGeneration
 
@@ -14,7 +16,6 @@ def load_summarizer():
 summarizer = load_summarizer()
 
 # Streamlit UI
-st.set_page_config(page_title="PEGASUS Indonesian News Summarizer")
 st.title("📰 PEGASUS Indonesian News Summarizer")
 st.write("Enter a URL from an Indonesian news site (e.g., Detik, Kompas) to summarize its content.")
 

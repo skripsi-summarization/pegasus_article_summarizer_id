@@ -4,6 +4,9 @@ from newspaper import Article
 from googletrans import Translator
 import torch
 
+# Page setup
+st.set_page_config(page_title="Indonesian News Summarizer", layout="centered")
+
 # Cache model and tokenizer
 @st.cache_resource
 def load_summarizer():
@@ -15,9 +18,6 @@ def load_summarizer():
 
 model, tokenizer, device = load_summarizer()
 translator = Translator()
-
-# Page setup
-st.set_page_config(page_title="Indonesian News Summarizer", layout="centered")
 
 # --- Styling ---
 st.markdown("""

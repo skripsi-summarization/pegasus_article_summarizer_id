@@ -23,7 +23,8 @@ translator = Translator()
 st.markdown("""
     <style>
     .scroll-box {
-        background-color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.95);
+        color: #111;
         padding: 1rem;
         border-radius: 10px;
         border: 1px solid #ccc;
@@ -31,7 +32,7 @@ st.markdown("""
         overflow-y: auto;
         font-size: 15px;
         line-height: 1.6;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         position: relative;
     }
     .scroll-box::-webkit-scrollbar {
@@ -42,8 +43,8 @@ st.markdown("""
         border-radius: 10px;
     }
     .summary-box {
-        background-color: #e3f2fd;
-        color: #111;
+        background-color: rgba(227, 242, 253, 0.9);
+        color: #0d0d0d;
         padding: 1rem;
         border-radius: 10px;
         border: 1px solid #64b5f6;

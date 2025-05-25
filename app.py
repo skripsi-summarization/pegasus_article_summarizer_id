@@ -29,18 +29,23 @@ st.markdown("""
         border-radius: 10px;
         border: 1px solid #ccc;
         max-height: 300px;
-        overflow-y: auto;
+        overflow-y: scroll;
         font-size: 15px;
         line-height: 1.6;
         box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         position: relative;
     }
     .scroll-box::-webkit-scrollbar {
-        width: 8px;
+        width: 10px;
+    }
+    .scroll-box::-webkit-scrollbar-track {
+        background: #e0e0e0;
+        border-radius: 10px;
     }
     .scroll-box::-webkit-scrollbar-thumb {
-        background-color: #bbb;
+        background-color: #888;
         border-radius: 10px;
+        border: 2px solid #e0e0e0;
     }
     .summary-box {
         background-color: rgba(227, 242, 253, 0.9);

@@ -4,7 +4,11 @@ from newspaper import Article
 from googletrans import Translator
 import torch
 import re
-from langdetect import detect
+from langdetect import detect, DetectorFactory
+from langcodes import Language
+
+# Set seed for consistent language detection
+DetectorFactory.seed = 0
 
 # Streamlit Page Config
 st.set_page_config(page_title="Indonesian News Summarizer", layout="wide")
@@ -71,7 +75,7 @@ st.markdown("<p style='text-align:center;'>Ringkas berita Indonesia secara otoma
 st.markdown("### 🔗 Masukkan URL Berita")
 with st.form(key="url_form"):
     url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
-    submit_url = st.form_submit_button("🔗 Gunakan URL")
+    submit_url = st.form_submit_button("🔗 Gunakan URL Ini")
 
 valid_url = re.match(r"https?://[\w\.-]+(?:/[\w\.-]*)*", url or "")
 
@@ -96,7 +100,8 @@ if show_btn:
             article.parse()
             lang = detect(article.text)
             if lang != 'id':
-                st.error("❌ Artikel ini terdeteksi dalam bahasa selain Bahasa Indonesia. Aplikasi hanya mendukung ringkasan untuk berita Bahasa Indonesia.")
+                lang_name = Language.get(lang).display_name('id')
+                st.error(f"❌ Artikel ini terdeteksi dalam bahasa {lang_name}. Aplikasi hanya mendukung ringkasan untuk berita Bahasa Indonesia.")
                 st.session_state.article_text = None
             else:
                 st.session_state.article_text = article.text

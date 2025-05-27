@@ -69,21 +69,21 @@ st.markdown("""
 
 # --- App Title and Description ---
 st.markdown("<h1 style='text-align:center; color:#0d47a1;'>📰 Indonesian News Summarizer</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>Ringkas berita Indonesia secara otomatis hanya dengan menempelkan URL artikel.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;'>Ringkas artikel berita berbahasa Indonesia secara otomatis melalui URL yang Anda masukkan.</p>", unsafe_allow_html=True)
 
 # --- URL Input and Submit ---
 st.markdown("### 🔗 Masukkan URL Berita")
 with st.form(key="url_form"):
     url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
-    submit_url = st.form_submit_button("🔗 Gunakan URL Ini")
+    submit_url = st.form_submit_button("🔗 Gunakan URL")
 
 valid_url = re.match(r"https?://[\w\.-]+(?:/[\w\.-]*)*", url or "")
 
 if submit_url:
     if not url or not valid_url:
-        st.error("❌ Format URL tidak valid. Harap masukkan link artikel berita yang benar.")
+        st.error("❌ Format URL tidak valid. Harap masukkan URL artikel berita yang benar.")
     else:
-        st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>✅ URL berhasil dimasukkan. Klik tombol di bawah untuk menampilkan artikel atau ringkasan.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>✅ URL berhasil dimasukkan. Klik tombol di bawah untuk menampilkan artikel dan menghasilkan ringkasan.</p>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -94,20 +94,20 @@ with col2:
 # --- Show Article ---
 if show_btn:
     if url:
-        try:
-            article = Article(url, language='id')
-            article.download()
-            article.parse()
-            lang = detect(article.text)
-            if lang != 'id':
-                lang_name = Language.get(lang).display_name('id')
-                st.error(f"❌ Artikel ini terdeteksi dalam bahasa {lang_name}. Aplikasi hanya mendukung ringkasan untuk berita Bahasa Indonesia.")
-                st.session_state.article_text = None
-            else:
-                st.session_state.article_text = article.text
-        
-        except Exception as e:
-            st.error("❌ Tidak ditemukan artikel dengan link berikut. Mohon input link yang benar.")
+        with st.spinner("📥 Mengambil artikel dan mendeteksi bahasa..."):
+            try:
+                article = Article(url, language='id')
+                article.download()
+                article.parse()
+                lang = detect(article.text)
+                if lang != 'id':
+                    lang_name = Language.get(lang).display_name('id')
+                    st.error(f"❌ Artikel ini terdeteksi dalam bahasa {lang_name}. Aplikasi hanya mendukung ringkasan untuk berita Bahasa Indonesia. Silahkan melakukan input ulang.")
+                    st.session_state.article_text = None
+                else:
+                    st.session_state.article_text = article.text
+            except Exception as e:
+                st.error("❌ Tidak dapat memuat artikel dari URL yang Anda masukkan. Pastikan URL yang digunakan benar dan mengarah ke halaman berita.")
 
 # --- Re-render Article if Already Shown ---
 if "article_text" in st.session_state and st.session_state.article_text:

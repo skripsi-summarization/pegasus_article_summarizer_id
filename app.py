@@ -5,7 +5,7 @@ from googletrans import Translator
 import torch
 
 # Streamlit Page Config
-st.set_page_config(page_title="Indonesian News Summarizer", layout="centered")
+st.set_page_config(page_title="Indonesian News Summarizer", layout="wide")
 
 # Load Model and Tokenizer
 @st.cache_resource
@@ -65,11 +65,14 @@ st.markdown("""
 st.markdown("<h1 style='text-align:center; color:#0d47a1;'>📰 Indonesian News Summarizer</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;'>Ringkas berita Indonesia secara otomatis hanya dengan menempelkan URL artikel.</p>", unsafe_allow_html=True)
 
-# --- URL Input ---
+# --- URL Input and Submit ---
 st.markdown("### 🔗 Masukkan URL Berita")
-url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
+with st.form(key="url_form"):
+    url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
+    submit_url = st.form_submit_button("📌 Tempelkan URL")
+
 if url:
-    st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>🔄 Tekan <strong>Enter</strong> setelah menempelkan URL untuk melanjutkan.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>✅ URL berhasil dimasukkan. Klik tombol di bawah untuk menampilkan artikel atau ringkasan.</p>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -85,14 +88,14 @@ if show_btn:
             article.download()
             article.parse()
             st.session_state.article_text = article.text
-
-            st.markdown("### 📄 Artikel Lengkap")
-            st.markdown(f"<div class='scroll-box'>{st.session_state.article_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
-
+        
         except Exception as e:
-            st.error(f"❌ Gagal mengambil artikel: {str(e)}")
-    else:
-        st.warning("⚠️ Mohon masukkan URL yang valid.")
+            st.error("❌ Tidak ditemukan artikel dengan link berikut. Mohon input link yang benar.")
+
+# --- Re-render Article if Already Shown ---
+if "article_text" in st.session_state:
+    st.markdown("### 📄 Artikel Lengkap")
+    st.markdown(f"<div class='scroll-box'>{st.session_state.article_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
 
 # --- Summarize Article ---
 if summarize_btn:
@@ -110,6 +113,7 @@ if summarize_btn:
                 en_summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
                 id_summary = translator.translate(en_summary, src='en', dest='id').text
 
+            st.success("✅ Ringkasan berhasil dibuat!")
             st.markdown("### 🔍 Hasil Ringkasan")
             st.markdown(f"<div class='summary-box'>{id_summary}</div>", unsafe_allow_html=True)
 

@@ -3,6 +3,7 @@ from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 from newspaper import Article
 from googletrans import Translator
 import torch
+import re
 
 # Streamlit Page Config
 st.set_page_config(page_title="Indonesian News Summarizer", layout="wide")
@@ -71,8 +72,13 @@ with st.form(key="url_form"):
     url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
     submit_url = st.form_submit_button("📌 Tempelkan URL")
 
-if url:
-    st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>✅ URL berhasil dimasukkan. Klik tombol di bawah untuk menampilkan artikel atau ringkasan.</p>", unsafe_allow_html=True)
+valid_url = re.match(r"https?://[\w\.-]+(?:/[\w\.-]*)*", url or "")
+
+if submit_url:
+    if not url or not valid_url:
+        st.error("❌ Format URL tidak valid. Harap masukkan link artikel berita yang benar.")
+    else:
+        st.markdown("<p style='color:#66bb6a; font-size: 0.9rem;'>✅ URL berhasil dimasukkan. Klik tombol di bawah untuk menampilkan artikel atau ringkasan.</p>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:

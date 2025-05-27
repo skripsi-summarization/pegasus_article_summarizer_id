@@ -4,6 +4,7 @@ from newspaper import Article
 from googletrans import Translator
 import torch
 import re
+from langdetect import detect
 
 # Streamlit Page Config
 st.set_page_config(page_title="Indonesian News Summarizer", layout="wide")
@@ -70,7 +71,7 @@ st.markdown("<p style='text-align:center;'>Ringkas berita Indonesia secara otoma
 st.markdown("### 🔗 Masukkan URL Berita")
 with st.form(key="url_form"):
     url = st.text_input("", placeholder="https://www.cnnindonesia.com/...", label_visibility="collapsed")
-    submit_url = st.form_submit_button("📌 Tempelkan URL")
+    submit_url = st.form_submit_button("🔗 Gunakan URL")
 
 valid_url = re.match(r"https?://[\w\.-]+(?:/[\w\.-]*)*", url or "")
 
@@ -93,19 +94,24 @@ if show_btn:
             article = Article(url, language='id')
             article.download()
             article.parse()
-            st.session_state.article_text = article.text
+            lang = detect(article.text)
+            if lang != 'id':
+                st.error("❌ Artikel ini terdeteksi dalam bahasa selain Bahasa Indonesia. Aplikasi hanya mendukung ringkasan untuk berita Bahasa Indonesia.")
+                st.session_state.article_text = None
+            else:
+                st.session_state.article_text = article.text
         
         except Exception as e:
             st.error("❌ Tidak ditemukan artikel dengan link berikut. Mohon input link yang benar.")
 
 # --- Re-render Article if Already Shown ---
-if "article_text" in st.session_state:
+if "article_text" in st.session_state and st.session_state.article_text:
     st.markdown("### 📄 Artikel Lengkap")
     st.markdown(f"<div class='scroll-box'>{st.session_state.article_text.replace(chr(10), '<br>')}</div>", unsafe_allow_html=True)
 
 # --- Summarize Article ---
 if summarize_btn:
-    if "article_text" in st.session_state:
+    if "article_text" in st.session_state and st.session_state.article_text:
         try:
             with st.spinner("🔄 Memproses artikel..."):
                 en_text = translator.translate(st.session_state.article_text, src='id', dest='en').text

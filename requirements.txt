@@ -6,3 +6,4 @@ newspaper3k
 sentencepiece
 lxml[html_clean]
 lxml_html_clean
+langdetect
